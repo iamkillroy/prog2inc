@@ -19,10 +19,22 @@ int entry;
 typedef struct Stack{
 	Node* head;
 } Stack;
+
 //STACK METHODS
-//we're using fixed sized stacks here chat
+//we're using dynamically allocated stacks
+//i get why people built these now because malloc
+//and free and memory safe c is so hard
+//but linked objects get dynamically put in the stack
+
 Node* Stack_peek_front(Stack *  user_stack){
 	return user_stack->head;
+}
+
+void Stack_push(Stack * user_stack, int entryValue) {
+	Node userNode;
+	userNode.entry = entryValue;
+	userNode.next = user_stack->head;
+	user_stack->head = *userNode;
 }
 
 
