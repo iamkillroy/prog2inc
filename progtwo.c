@@ -1,96 +1,93 @@
+#include <cerrno>
+#include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
-//This is an exercise to recreate every data structure I possibly can
-//from EECS 268 at KU into C for future C development
-//This will contain implementations of:
-//Node, Stack, Queue, LinkedList, BinaryTree, Heap
-//Why not make this in C++ because of real classes??
-//This is an exercise and I wanna challenge myself
+#include <errno.h>
+#include <stdbool.h>
 
 
-//NODE
+void handleNullPtr (void * ptr){
+    if (ptr == NULL){printf("Malloc returned null pointer reference");exit(ENOMEM);}
+}
+/*#######
+ # NODE #
+ ########
+ */
 typedef struct Node {
-struct Node *next;
-int entry;
+    struct Node *next;
+    uint32_t entry;
 } Node;
 
-//STACK
-typedef struct Stack{
-	Node *head;
-	int length;
+Node* node_init(uint32_t entry){
+    /* Function inits a node and returns a pointer to the node */
+    //make the node and sets the entry to the entry
+    //and the Node's next to NULL
+
+    // here we type case the return of malloc as a Node * (pointer)
+    // and allocate the size of
+    Node * myNode = (Node *) malloc(sizeof(Node));
+    myNode->entry = entry;
+    myNode->next = NULL;
+    return myNode;
+}
+
+/* STACK  */
+typedef struct Stack {
+    Node * head;
+    uint16_t len;
 } Stack;
 
-typedef struct Queue{
-    Node *head;
-    Node *tail;
-    int length;
-} Queue;
-//stack push- pushes a new value to the top
-//of the given stack
-bool stack_is_empty(Stack *mystack){
-    if (mystack->head == NULL){
-        return true;
+Stack* stack_init(){
+    /* Makes a stack object and clear garbage */
+    //allocate a stack on the heap with size of structStack
+    Stack * myStack = (Stack * ) malloc(sizeof(Stack));
+    handleNullPtr(myStack);
+    myStack->head = NULL;
+    myStack->len = 0; //set length to zero
+    return myStack;
+}
+
+void stack_push(Stack * myStack, uint32_t value){
+    /*Pushes a value onto the stack */
+    //lets make a node in the heap
+    Node * nodeToPush = malloc(sizeof(Node));
+    handleNullPtr(nodeToPush);
+    nodeToPush->entry = value;
+    //now let's push it!!!!
+    //let's do a quick check to see if the stack is empty
+    if (myStack->len == 0){
+        nodeToPush->next = myStack->head;
+        myStack->head = nodeToPush;
+        myStack->len++;
     }
-    return false;
+    nodeToPush->next = myStack->head;
+    myStack->head = nodeToPush;
+    myStack->len++;
+
 }
-void stack_init(Stack *mystack){
-    //clears the memory out on the head. not needed
-    //but needed because otherwise the first value is garbage
-    mystack->head = NULL;
-    mystack->length = 0;
-}
-void stack_push(Stack *mystack, Node *nodeToPush) {
-    //first get the head and set it to the previous head
-    Node *previousHead = mystack->head;
-    mystack->head = nodeToPush;
-    nodeToPush->next = previousHead;
-    mystack->length++;
-}
-int stack_peek(Stack *mystack) {
-    //returns the top value
-    printf("slength : %d\n", mystack->length);
-    if (mystack->length != 0){
-        //this if check avoids a segmentation fault
-        return mystack->head->entry;
-    }
-    else{
-        printf("stack unbounded");
+
+uint32_t stack_peek(Stack * myStack){
+    if (myStack->len == 0){
+        printf("Cannot peek empty stack");
         exit(1);
     }
+    return myStack->head->entry;
+}
+bool stack_is_empty(Stack * mystack) {
+    if (mystack->len == 0){return true;}return false;
 }
 
-Node stack_pop(Stack *mystack){
-    //deletes the stuff from the stack!!
-    // checks if the stack is empty
-    if (mystack->length == 0){
-        printf("Stack unbounded");
-        exit(1);
-    }
-
-    mystack->length--;
-    Node *previousHeadNode = mystack->head;
-    mystack->head = mystack->head->next;
-    return *previousHeadNode;
-}
-
-void queue_enqueue(){
-
-}
+Stack* stack_init(Stack);
+void stack_push(Stack *, uint32_t);
+uint32_t stack_peek(Stack * );
 
 
 int main(){
-    Stack babysFirstStack;
-    Node firstNode;
-    Node secondNode;
-    firstNode.entry = 1;
-    secondNode.entry = 3;
-    stack_init(&babysFirstStack);
-    stack_push(&babysFirstStack,&firstNode);
-    stack_push(&babysFirstStack, &secondNode);
-    printf("%d\n", stack_peek(&babysFirstStack));
-    stack_pop(&babysFirstStack);
-    printf("%d\n", stack_peek(&babysFirstStack));
-    printf("%d\n", stack_peek(&babysFirstStack));
-	return 0;
+    Stack leStack;
+    Stack *leStackPointer = stack_init(leStack);
+    stack_push(leStackPointer, 13);
+    printf("%d", stack_peek(leStackPointer));
+    stack_push(leStackPointer, 32);
+    printf("%d", stack_peek(leStackPointer));
+    return 0;
 }
