@@ -22,6 +22,11 @@ typedef struct Queue {
     uint16_t len;
 } Queue;
 
+typedef struct LinkedList{
+    Node *head;
+    uint16_t len;
+} LinkedList;
+
 
 void handleNullPtr(void * ptr);
 
@@ -38,7 +43,8 @@ void queue_enqueue(Queue *, uint32_t);
 void queue_dequeue(Queue *);
 uint32_t queue_peek(Queue *);
 
-
+LinkedList * linked_list_init();
+void linked_list_append(LinkedList *, uint16_t, uint32_t);
 
 void handleNullPtr (void * ptr){
     if (ptr == NULL){printf("Malloc returned null pointer reference");exit(ENOMEM);}
@@ -128,6 +134,7 @@ void queue_enqueue(Queue* myqueue, uint32_t value) {
     ///adds a value to the back of the queue
     // make a new node with that value
     Node * newTailNode = malloc(sizeof(Node));
+    handleNullPtr(newTailNode);
     newTailNode->entry = value;
     // then let's set that equal to the tail
     //first though if the len of queue == 0 then
@@ -167,16 +174,56 @@ uint32_t queue_peek(Queue * myqueue){
     }
     return myqueue->head->entry;
 }
+bool queue_is_empty(Queue * myqueue){
+    if (myqueue->len == 0){ return true;} return false;
+}
+
+LinkedList * linked_list_init(){
+    //makes a linked list
+    LinkedList * myLL = malloc(sizeof(LinkedList));
+    handleNullPtr(myLL);
+    myLL->head = NULL;
+    myLL->len = 0;
+    return myLL;
+}
+
+void linked_list_append(LinkedList * myLL, uint16_t index, uint32_t value){
+    //adds a node to our linked list
+    // business majors are either the hottest or ugliest people you'll meet
+    Node * nodeToBeLLed = (Node * )malloc(sizeof(Node));
+    handleNullPtr(nodeToBeLLed);
+    nodeToBeLLed->entry = value;
+    nodeToBeLLed->next = NULL;
+    //if this is the first element
+    if (myLL->len == 0){
+        myLL->head = nodeToBeLLed;
+        myLL->len++;
+        return;
+    }
+    //otherwise we have to keep going until we reach the index
+    Node * traversalNode = myLL->head ;//set a traversal node = head
+    int i = 0;
+    for (;traversalNode->next != NULL && i!=index; traversalNode = traversalNode->next){//while we're not at the index
+        i++;
+    }
+    printf("ended up at %d", i);
+    if (i!=index){
+        //we stopped short because index is too far
+        // so just append to the next
+        traversalNode->next = nodeToBeLLed;
+    }
+    else {
+        //in this case, i == index so
+        // we then set it as an inbetween value
+        Node * previousNextAtIndex = traversalNode->next;
+        Node * previousFormerNode = traversalNode;
+    }
+}
 
 
 int main(){
-    Queue * mq = queue_init();
-    queue_enqueue(mq, 32);
-    printf("%d\n", queue_peek(mq));
-    queue_enqueue(mq, 2345) ;
-    queue_enqueue(mq, 19);
-    printf("%d\n", queue_peek(mq));
-    queue_dequeue(mq);
-    printf("%d\n", queue_peek(mq));
+    LinkedList * ll = linked_list_init();
+    linked_list_append(ll, 1, 1);
+    linked_list_append(ll, 1, 3);
     return 0;
 }
