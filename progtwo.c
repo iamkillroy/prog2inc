@@ -1,9 +1,28 @@
-#include <cerrno>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
+
+
+//TYPEDEFS
+typedef struct Node {
+    struct Node *next;
+    uint32_t entry;
+} Node;
+
+typedef struct Stack {
+    Node * head;
+    uint16_t len;
+} Stack;
+
+void handleNullPtr(void * ptr);
+Node * node_init(uint32_t);
+Stack* stack_init();
+void stack_push(Stack *, uint32_t);
+void stack_pop(Stack *);
+bool stack_is_empty(Stack *);
+uint32_t stack_peek(Stack * );
 
 
 void handleNullPtr (void * ptr){
@@ -13,10 +32,7 @@ void handleNullPtr (void * ptr){
  # NODE #
  ########
  */
-typedef struct Node {
-    struct Node *next;
-    uint32_t entry;
-} Node;
+
 
 Node* node_init(uint32_t entry){
     /* Function inits a node and returns a pointer to the node */
@@ -31,11 +47,6 @@ Node* node_init(uint32_t entry){
     return myNode;
 }
 
-/* STACK  */
-typedef struct Stack {
-    Node * head;
-    uint16_t len;
-} Stack;
 
 Stack* stack_init(){
     /* Makes a stack object and clear garbage */
@@ -59,6 +70,7 @@ void stack_push(Stack * myStack, uint32_t value){
         nodeToPush->next = myStack->head;
         myStack->head = nodeToPush;
         myStack->len++;
+        return;
     }
     nodeToPush->next = myStack->head;
     myStack->head = nodeToPush;
@@ -66,6 +78,18 @@ void stack_push(Stack * myStack, uint32_t value){
 
 }
 
+void stack_pop(Stack * myStack){
+    //handles deletion of value from stack
+    if (myStack->len == 0){
+        return;
+    }
+    Node *nextValue = myStack->head->next;
+    free(myStack->head);
+    myStack->head = nextValue;
+    myStack->len--;
+    return;
+
+}
 uint32_t stack_peek(Stack * myStack){
     if (myStack->len == 0){
         printf("Cannot peek empty stack");
@@ -77,17 +101,9 @@ bool stack_is_empty(Stack * mystack) {
     if (mystack->len == 0){return true;}return false;
 }
 
-Stack* stack_init(Stack);
-void stack_push(Stack *, uint32_t);
-uint32_t stack_peek(Stack * );
+
 
 
 int main(){
-    Stack leStack;
-    Stack *leStackPointer = stack_init(leStack);
-    stack_push(leStackPointer, 13);
-    printf("%d", stack_peek(leStackPointer));
-    stack_push(leStackPointer, 32);
-    printf("%d", stack_peek(leStackPointer));
     return 0;
 }
